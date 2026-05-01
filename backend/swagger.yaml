@@ -1,0 +1,130 @@
+openapi: 3.0.0
+info:
+  title: BudgetFlow API
+  version: 1.0.0
+  description: Kişisel harcama takip sistemi için RESTful API dokümantasyonu.
+
+paths:
+  /api/harcamalari-getir:
+    get:
+      summary: Tüm harcamaları getir
+      responses:
+        '200':
+          description: Harcamalar başarıyla getirildi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Harcama'
+        '500':
+          description: Sunucu hatası
+
+  /api/harcama-ekle:
+    post:
+      summary: Yeni harcama ekle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HarcamaInput'
+      responses:
+        '201':
+          description: Harcama başarıyla eklendi
+        '400':
+          description: Geçersiz veri
+        '500':
+          description: Sunucu hatası
+
+  /api/harcama-guncelle/{id}:
+    put:
+      summary: Harcama güncelle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HarcamaInput'
+      responses:
+        '200':
+          description: Harcama başarıyla güncellendi
+        '400':
+          description: Geçersiz veri
+        '404':
+          description: Harcama bulunamadı
+        '500':
+          description: Sunucu hatası
+
+  /api/harcama-sil/{id}:
+    delete:
+      summary: Harcama sil
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Harcama başarıyla silindi
+        '404':
+          description: Harcama bulunamadı
+        '500':
+          description: Sunucu hatası
+
+components:
+  schemas:
+    Harcama:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        baslik:
+          type: string
+          example: Yemek
+        tutar:
+          type: number
+          example: 150.50
+        kategori:
+          type: string
+          example: Gıda
+        tarih:
+          type: string
+          format: date
+          example: 2026-05-01
+        aciklama:
+          type: string
+          example: Öğle yemeği
+
+    HarcamaInput:
+      type: object
+      required:
+        - baslik
+        - tutar
+        - kategori
+        - tarih
+      properties:
+        baslik:
+          type: string
+          example: Yemek
+        tutar:
+          type: number
+          example: 150.50
+        kategori:
+          type: string
+          example: Gıda
+        tarih:
+          type: string
+          format: date
+          example: 2026-05-01
+        aciklama:
+          type: string
+          example: Öğle yemeği

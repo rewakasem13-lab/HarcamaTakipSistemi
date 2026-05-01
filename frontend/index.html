@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>BudgetFlow</title>
+
+  <style>
+
+.dark-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 18px;
+  cursor: pointer;
+  color: white;
+  transition: 0.2s;
+}
+
+.dark-btn:hover {
+  background: rgba(255,255,255,0.35);
+  transform: scale(1.1);
+}
+
+.filter-btn {
+  background: #3b82f6;
+  color: white;
+}
+
+.filter-btn:hover {
+  background: #2563eb;
+}
+
+.show-btn {
+  background: #10b981;
+  color: white;
+}
+
+.show-btn:hover {
+  background: #059669;
+}
+.filter-btn, .show-btn {
+  transition: 0.2s;
+}
+
+.filter-btn:hover, .show-btn:hover {
+  transform: scale(1.05);
+}
+
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      margin: 0;
+      padding: 30px;
+      color: #222;
+    }
+
+    .dark {
+      background: #111827;
+      color: white;
+    }
+
+    .dark .card {
+      background: #1f2937;
+    }
+
+    .dark input {
+      background: #374151;
+      color: white;
+      border: 1px solid #555;
+    }
+
+    .dark h2,
+    .dark .expense strong {
+      color: white;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+   .header {
+  background: linear-gradient(135deg, #4f46e5, #06b6d4);
+  color: white;
+  padding: 25px 30px;
+  border-radius: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+    .header h1 {
+      margin: 0;
+      font-size: 36px;
+    }
+
+    .header p {
+      margin-top: 8px;
+      opacity: 0.9;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #222;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    input {
+      padding: 13px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+    }
+
+    button {
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: bold;
+      margin: 4px;
+    }
+
+    .add-btn {
+      background: #4f46e5;
+      color: white;
+      margin-top: 15px;
+    }
+
+    .add-btn:hover {
+      background: #4338ca;
+    }
+
+    .delete-btn {
+      background: #ef4444;
+      color: white;
+      padding: 8px 12px;
+      margin-top: 8px;
+    }
+
+    .delete-btn:hover {
+      background: #dc2626;
+    }
+
+    .edit-btn {
+      background: #e5e7eb;
+      color: #111827;
+      padding: 8px 12px;
+      margin-top: 8px;
+    }
+
+    .summary {
+      background: #eef2ff;
+      color: #3730a3;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .expense {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .dark .expense {
+      background: #374151;
+      border-color: #4b5563;
+    }
+
+    .expense strong {
+      color: #111827;
+      font-size: 18px;
+    }
+
+    .info {
+      color: #6b7280;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .dark .info {
+      color: #d1d5db;
+    }
+
+    .amount {
+      color: #16a34a;
+      font-weight: bold;
+      font-size: 18px;
+      text-align: right;
+    }
+
+    .empty {
+      color: #6b7280;
+      background: #f9fafb;
+      border: 1px dashed #d1d5db;
+      padding: 18px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #16a34a;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      opacity: 0;
+      transition: 0.3s;
+      font-weight: bold;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="header">
+     <div>
+  <h1 style="margin:0; font-size:30px;">BudgetFlow</h1>
+  <p style="margin:5px 0 0; opacity:0.85;">Kişisel Harcama Takip Sistemi</p>
+</div>
+
+     <button class="dark-btn" onclick="toggleDark()">🌙</button>
+
+    </div>
+
+    <div class="card">
+      <h2>Yeni Harcama Ekle</h2>
+
+      <div class="form-grid">
+        <input id="baslik" placeholder="Başlık">
+        <input id="tutar" type="number" placeholder="Tutar">
+        <input id="kategori" placeholder="Kategori">
+        <input id="tarih" type="date" lang="tr">
+        <input id="aciklama" placeholder="Açıklama">
+      </div>
+
+      <button class="add-btn" onclick="ekle()">Harcama Ekle</button>
+    </div>
+
+    <div class="card">
+      <h2>Harcamalar</h2>
+<input type="date" id="filterDate">
+
+<button class="filter-btn" onclick="filtrele()">Filtrele</button>
+
+<button class="show-btn" onclick="tumunuGoster()">Hepsini Göster</button>
+
+      <div id="toplam" class="summary">Toplam: 0 TL</div>
+      <div id="liste"></div>
+    </div>
+
+  </div>
+
+  <div id="toast"></div>
+
+<script>
+const API_URL = 'http://127.0.0.1:3000/api';
+
+function showToast(message, type = "success") {
+  const toast = document.getElementById('toast');
+
+  toast.innerText = message;
+  toast.style.background = type === "success" ? "#16a34a" : "#ef4444";
+  toast.style.opacity = 1;
+
+  setTimeout(() => {
+    toast.style.opacity = 0;
+  }, 2000);
+}
+
+async function ekle() {
+  const baslik = document.getElementById('baslik').value.trim();
+  const tutar = document.getElementById('tutar').value;
+  const kategori = document.getElementById('kategori').value.trim();
+  const tarih = document.getElementById('tarih').value;
+  const aciklama = document.getElementById('aciklama').value.trim();
+
+  if (!baslik || !tutar || !kategori || !tarih) {
+    alert('Lütfen başlık, tutar, kategori ve tarih alanlarını doldurun.');
+    return;
+  }
+
+  const data = { baslik, tutar, kategori, tarih, aciklama };
+
+  if (window.guncelleId) {
+    await fetch(`${API_URL}/harcama-guncelle/${window.guncelleId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    window.guncelleId = null;
+    showToast("Harcama güncellendi ✔️");
+  } else {
+    await fetch(`${API_URL}/harcama-ekle`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    showToast("Harcama eklendi ✔️");
+  }
+
+  temizle();
+  getir();
+}
+
+function temizle() {
+  document.getElementById('baslik').value = '';
+  document.getElementById('tutar').value = '';
+  document.getElementById('kategori').value = '';
+  document.getElementById('tarih').value = '';
+  document.getElementById('aciklama').value = '';
+}
+
+async function getir() {
+  const res = await fetch(`${API_URL}/harcamalari-getir`);
+  const data = await res.json();
+
+  window.tumData = data;
+localStorage.setItem('harcamalar', JSON.stringify(data));
+  listeyiGoster(data);
+}
+
+function listeyiGoster(data) {
+  const liste = document.getElementById('liste');
+  const toplamDiv = document.getElementById('toplam');
+
+  liste.innerHTML = '';
+  let toplam = 0;
+
+  if (!data || data.length === 0) {
+    toplamDiv.innerText = 'Toplam: 0 TL';
+    liste.innerHTML = '<div class="empty">Henüz harcama bulunamadı.</div>';
+    return;
+  }
+
+  data.forEach(h => {
+    toplam += Number(h.tutar);
+
+    const div = document.createElement('div');
+    div.className = 'expense';
+
+    const tarihTR = h.tarih
+      ? new Date(h.tarih).toLocaleDateString('tr-TR', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        })
+      : '';
+
+    const aciklama = h["açıklama"] || h.aciklama || '';
+
+    div.innerHTML = `
+      <div>
+        <strong>${h.baslik}</strong>
+        <div class="info">${h.kategori} | ${tarihTR}</div>
+        <div class="info">${aciklama}</div>
+      </div>
+
+      <div>
+        <div class="amount">${Number(h.tutar).toFixed(2)} TL</div>
+        <button class="edit-btn" onclick="duzenle(${h.id}, '${temizMetin(h.baslik)}', ${h.tutar}, '${temizMetin(h.kategori)}', '${h.tarih}', '${temizMetin(aciklama)}')">Düzenle</button>
+        <button class="delete-btn" onclick="sil(${h.id})">Sil</button>
+      </div>
+    `;
+
+    liste.appendChild(div);
+  });
+
+  toplamDiv.innerText = `Toplam: ${toplam.toFixed(2)} TL`;
+}
+
+function temizMetin(text) {
+  return String(text || '').replace(/'/g, "").replace(/"/g, "");
+}
+
+async function sil(id) {
+  if (!confirm('Bu harcamayı silmek istediğine emin misin?')) {
+    return;
+  }
+
+  await fetch(`${API_URL}/harcama-sil/${id}`, {
+    method: 'DELETE'
+  });
+
+  showToast("Harcama silindi ✔️");
+  getir();
+}
+
+function duzenle(id, baslik, tutar, kategori, tarih, aciklama) {
+  document.getElementById('baslik').value = baslik;
+  document.getElementById('tutar').value = tutar;
+  document.getElementById('kategori').value = kategori;
+  document.getElementById('tarih').value = tarih ? new Date(tarih).toISOString().slice(0,10) : '';
+  document.getElementById('aciklama').value = aciklama;
+
+  window.guncelleId = id;
+  showToast("Düzenleme modu açıldı ✔️");
+}
+
+function toggleDark() {
+  document.body.classList.toggle('dark');
+}
+
+function filtrele() {
+  const secilenTarih = document.getElementById('filterDate').value;
+
+  if (!secilenTarih) {
+    getir();
+    return;
+  }
+
+  const filtreli = window.tumData.filter(h => {
+    if (!h.tarih) return false;
+
+    const tarih = new Date(h.tarih).toLocaleDateString('en-CA');
+    return tarih === secilenTarih;
+  });
+
+  listeyiGoster(filtreli);
+}
+
+function tumunuGoster() {
+  document.getElementById('filterDate').value = '';
+  getir();
+}
+
+const kayitliHarcamalar = localStorage.getItem('harcamalar');
+
+if (kayitliHarcamalar) {
+  const data = JSON.parse(kayitliHarcamalar);
+  window.tumData = data;
+  listeyiGoster(data);
+}
+
+
+
+getir();
+</script>
+
+</body>
+</html>
